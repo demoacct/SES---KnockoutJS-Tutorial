@@ -1,4 +1,4 @@
-﻿
+﻿<span data-bind="kendoNotification: { info: info, warning: warning, success: success, error: error }"></span>
 
 <ul class="nav nav-tabs">
     <li role="presentation"><a class="fancybox" rel="group" href="#create-form">+ Add</a></li>
@@ -43,7 +43,7 @@
                     groupable: false,
                     scrollable: false,
                     sortable: true,
-                    pageable: { pageSize: 5 },
+                    pageable: { pageSize: 10 },
                     rowTemplate: 'rowTmpl',
                     useKOTemplates: true ,
                     columns:
@@ -88,6 +88,11 @@
             function StudentViewModel() {
 
                 var self = this;
+
+                self.info = ko.observable();
+                self.warning = ko.observable();
+                self.success = ko.observable();
+                self.error = ko.observable();
 
                 self.FirstName = ko.observable();
                 self.LastName = ko.observable();
@@ -170,6 +175,11 @@
 
                 self.CreateStudent = function () {
 
+                    self.info("");
+                    self.warning("");
+                    self.success("");
+                    self.error("");
+
                     var mapping = {
                         'ignore': ["StartDate", "EndDate", "Students","Genders", "GenderStr", "Keyword", "CreatedOnStr"]
                     }
@@ -198,6 +208,9 @@
                         });
 
                         $.fancybox.close();
+
+                        self.success("New student created");
+
                     });
 
                 };
