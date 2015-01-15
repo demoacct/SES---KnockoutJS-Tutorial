@@ -1,0 +1,43 @@
+﻿<div id="create-form" style="display:none;">
+        <div class="panel">
+            <div class="panel-title">
+                <span>Student Create Form</span>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div>
+                        <input data-bind="value: FirstName" class="form-control" placeholder="First Name" />
+                    </div>
+                    <br />
+                    <div>
+                        <input data-bind="value: MiddleName" class="form-control" placeholder="Middle Name" />
+                    </div>
+                    <br />
+                    <div>
+                        <input data-bind="value: LastName" class="form-control" placeholder="Last Name" />
+                    </div>
+                    <br />
+                    <div>
+                        <div>
+                            <span style="color:gray;">Gender</span>
+                        </div>
+
+                        <div data-bind="foreach: Genders">
+                            <label class="h6">
+                                <input type="radio" name="optionsGroup" data-bind="attr: {value: Value}, checked: $root.Gender" />
+                                <span data-bind="text: Text"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <br />
+                    <div>
+                        <textarea data-bind="value: Address" rows="8" cols="10" placeholder="Complete Address" class="form-control"></textarea>
+                    </div>
+                    <br />
+                    <div>
+                        <input type="button" data-bind="click: CreateStudent" value="Create Student" class="btn btn-warning btn-sm" />
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>

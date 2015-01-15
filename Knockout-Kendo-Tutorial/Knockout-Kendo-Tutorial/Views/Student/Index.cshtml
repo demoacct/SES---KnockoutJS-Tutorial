@@ -1,0 +1,196 @@
+﻿
+
+<ul class="nav nav-tabs">
+    <li role="presentation"><a class="fancybox" rel="group" href="#create-form">+ Add</a></li>
+</ul>
+
+<br />
+
+<div class="panel-body">
+
+    <table>
+        <tr>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-addon"><strong>From</strong> </span>
+                    <input data-bind="kendoDatePicker: StartDate" />
+                </div>
+            </td>
+            <td>
+                <div class="input-group">
+                    <span class="input-group-addon"><strong>To</strong> </span>
+                    <input data-bind="kendoDatePicker: EndDate" />
+                </div>
+            </td>
+            <td>
+                <input data-bind="click: ApplyFilter" class="btn btn-sm btn-warning" value="Apply Filter" />
+            </td>
+        </tr>
+    </table>
+
+    <div class="pull-right">
+        <input data-bind="value: Keyword" class="form-control" placeholder="Search student" />
+    </div>
+
+</div>
+
+<div class="panel-body">
+
+    <table class="h6 table-hover table-striped table-condensed table-responsive" data-bind="
+            kendoGrid:
+                {
+                    data: Students,
+                    groupable: false,
+                    scrollable: false,
+                    sortable: true,
+                    pageable: { pageSize: 5 },
+                    rowTemplate: 'rowTmpl',
+                    useKOTemplates: true ,
+                    columns:
+                        [{ field: 'FirstName', headerTemplate: 'First Name' },
+                        { field: 'MiddleName', headerTemplate: 'Middle Name' },
+                        { field: 'LastName', headerTemplate: 'Last Name' },
+                        { field: 'GenderStr', headerTemplate: 'Gender' },
+                        { field: 'Address', headerTemplate: 'Address' }]
+                }"></table>
+</div>
+
+@Html.Partial("_StudentCreateForm")
+
+<script id="rowTmpl" type="text/html">
+    <tr>
+        @*<td><a data-bind="attr: { href: Url}"><span data-bind="text: Title"></span></a></td>*@
+        <td><span data-bind="text: FirstName"></span></td>
+        <td><span data-bind="text: MiddleName"></span></td>
+        <td><span data-bind="text: LastName"></span></td>
+        <td><span data-bind="text: GenderStr"></span></td>
+        <td><span data-bind="text: Address"></span></td>
+    </tr>
+</script>
+
+<link rel="stylesheet" href="~/Content/fancy-box/jquery.fancybox.css" type="text/css" />
+<link rel="stylesheet" href="~/Content/fancy-box/helpers/jquery.fancybox-buttons.css" type="text/css" />
+<link rel="stylesheet" href="~/Content/fancy-box/helpers/jquery.fancybox-thumbs.css" type="text/css" />
+
+@section Scripts{
+
+    <script src="~/Content/fancy-box/jquery.mousewheel-3.0.6.pack.js"></script>
+    <script src="~/Content/fancy-box/jquery.fancybox.pack.js"></script>
+    <script src="~/Content/fancy-box/helpers/jquery.fancybox-buttons.js"></script>
+    <script src="~/Content/fancy-box/helpers/jquery.fancybox-media.js"></script>
+    <script src="~/Content/fancy-box/helpers/jquery.fancybox-thumbs.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            function StudentViewModel() {
+
+                var self = this;
+
+                self.FirstName = ko.observable();
+                self.LastName = ko.observable();
+                self.MiddleName = ko.observable();
+                self.Address = ko.observable();
+                self.Gender = ko.observable();
+
+                self.StartDate = ko.observable(new Date());
+                self.EndDate = ko.observable(new Date());
+
+                self.Students = ko.observableArray([]);
+                self.Genders = ko.observableArray([]);
+                self.GenderStr = ko.observable();
+
+                self.Keyword = ko.observable("");
+
+                self.Keyword.subscribe(function() {
+
+                    self.Students([]);
+
+                    $.getJSON("/student/getstudents?keyword=" + self.Keyword()+"&&start="+self.StartDate()+"&&end="+self.EndDate(), function (result) {
+
+                        var students = ko.toJS(result);
+
+                        self.Students(students);
+
+                    });
+
+                });
+
+                $.getJSON("/student/getstudents?keyword=" + self.Keyword() + "&&start=" + self.StartDate() + "&&end=" + self.EndDate(), function (result) {
+
+                    var students = ko.toJS(result);
+
+                    self.Students(students);
+
+                });
+
+                $.getJSON("/api/util", function (result) {
+
+                    var genders = ko.toJS(result);
+
+                    self.Genders(genders);
+
+                });
+
+                self.ApplyFilter = function () {
+
+                    self.Students([]);
+
+                    self.FirstName("");
+                    self.MiddleName("");
+                    self.LastName("");
+                    self.Address("");
+
+                    $.getJSON("/student/getstudents?keyword=" + self.Keyword() + "&&start=" + self.StartDate() + "&&end=" + self.EndDate(), function (result) {
+
+                        var students = ko.toJS(result);
+
+                        self.Students(students);
+
+                    });
+
+                };
+
+                self.CreateStudent = function () {
+
+                    var mapping = {
+                        'ignore': ["StartDate", "EndDate", "Students","Genders", "GenderStr", "Keyword"]
+                    }
+
+                    var toJS = ko.mapping.toJS(self,mapping);
+
+                    $.ajax({
+                        url: "/student/createstudent",
+                        type: "post",
+                        data: { model: JSON.stringify(toJS) }
+                    }).done(function (result) {
+
+                        self.Students([]);
+
+                        self.FirstName("");
+                        self.MiddleName("");
+                        self.LastName("");
+                        self.Address("");
+
+                        $.getJSON("/student/getstudents?keyword=" + self.Keyword() + "&&start=" + self.StartDate() + "&&end=" + self.EndDate(), function (result) {
+
+                            var students = ko.toJS(result);
+
+                            self.Students(students);
+
+                        });
+
+                        $.fancybox.close();
+                    });
+
+                };
+            }
+
+            ko.applyBindings(new StudentViewModel());
+
+            $('.fancybox').fancybox();
+
+        });
+
+    </script>
+}
