@@ -23,7 +23,7 @@
                 </div>
             </td>
             <td>
-                <input data-bind="click: ApplyFilter" class="btn btn-sm btn-warning" value="Apply Filter" />
+                <input type="button" data-bind="click: ApplyFilter" class="btn btn-sm btn-warning" value="Apply Filter" />
             </td>
         </tr>
     </table>
@@ -51,7 +51,8 @@
                         { field: 'MiddleName', headerTemplate: 'Middle Name' },
                         { field: 'LastName', headerTemplate: 'Last Name' },
                         { field: 'GenderStr', headerTemplate: 'Gender' },
-                        { field: 'Address', headerTemplate: 'Address' }]
+                        { field: 'Address', headerTemplate: 'Address' },
+                        { field: 'CreatedOnStr', headerTemplate: 'Created On' }]
                 }"></table>
 </div>
 
@@ -65,6 +66,7 @@
         <td><span data-bind="text: LastName"></span></td>
         <td><span data-bind="text: GenderStr"></span></td>
         <td><span data-bind="text: Address"></span></td>
+        <td><span data-bind="text: CreatedOnStr"></span></td>
     </tr>
 </script>
 
@@ -99,6 +101,7 @@
                 self.Students = ko.observableArray([]);
                 self.Genders = ko.observableArray([]);
                 self.GenderStr = ko.observable();
+                self.CreatedOnStr = ko.observable();
 
                 self.Keyword = ko.observable("");
 
@@ -107,6 +110,20 @@
                     self.Students([]);
 
                     $.getJSON("/student/getstudents?keyword=" + self.Keyword()+"&&start="+self.StartDate()+"&&end="+self.EndDate(), function (result) {
+
+                        var students = ko.toJS(result);
+
+                        self.Students(students);
+
+                    });
+
+                });
+
+                $.getJSON("/student/getstartdate", function (result) {
+
+                    self.StartDate(new Date(result));
+
+                    $.getJSON("/student/getstudents?keyword=" + self.Keyword() + "&&start=" + self.StartDate() + "&&end=" + self.EndDate(), function (result) {
 
                         var students = ko.toJS(result);
 
@@ -154,7 +171,7 @@
                 self.CreateStudent = function () {
 
                     var mapping = {
-                        'ignore': ["StartDate", "EndDate", "Students","Genders", "GenderStr", "Keyword"]
+                        'ignore': ["StartDate", "EndDate", "Students","Genders", "GenderStr", "Keyword", "CreatedOnStr"]
                     }
 
                     var toJS = ko.mapping.toJS(self,mapping);

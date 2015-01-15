@@ -18,6 +18,12 @@ namespace Knockout_Kendo_Tutorial
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+                name: "GetStartDate",
+                url: "{controller}/{action}",
+                defaults: new { controller = "Util", action = "GetStartDate" }
+                );
         }
     }
 }

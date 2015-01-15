@@ -1,4 +1,5 @@
 ﻿using Knockout_Kendo_Tutorial.Models.Entities;
+using Knockout_Kendo_Tutorial.Models.Repositories.RepositoryImpl;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -143,6 +144,18 @@ namespace Knockout_Kendo_Tutorial.Controllers.StudentControllersMvc
             {
                 throw;
             }
+        }
+
+        public JsonResult GetStartDate()
+        {
+            StudentRepository repo = new StudentRepository();
+
+            var students = repo.RetrieveAll();
+            var selectMin = students.Result.Min(a => a.CreatedOn);
+
+            string minDate = selectMin.ToString("M/dd/yyyy");
+
+            return Json(minDate, JsonRequestBehavior.AllowGet);
         }
     }
 }

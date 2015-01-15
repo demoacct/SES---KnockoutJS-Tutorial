@@ -16,5 +16,6 @@ namespace Knockout_Kendo_Tutorial.Models.Entities
         public Knockout_Kendo_Tutorial.Models.Enums.Gender Gender { get; set; }
         public string GenderStr { get { return this.Gender.ToString(); } }
         public string Address { get; set; }
+        public string CreatedOnStr { get { return this.CreatedOn.ToString("MMM dd, yyyy hh:mm:ss tt"); } }
     }
 }
